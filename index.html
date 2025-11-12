@@ -1,482 +1,506 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Homework Finder - Minecraft Style</title>
-    <style>
-        @font-face {
-            font-family: 'Minecraft';
-            src: url('https://cdn.jsdelivr.net/npm/minecraft-font@1.0.0/font/minecraft.woff2') format('woff2');
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            image-rendering: pixelated;
-        }
-        
-        body {
-            background: #1a1a1a;
-            font-family: 'Minecraft', monospace;
-            color: #fff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-image: 
-                radial-gradient(circle at 25% 25%, #2a2a2a 0%, #1a1a1a 100%);
-        }
-        
-        .container {
-            background: 
-                linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%),
-                repeating-linear-gradient(45deg, transparent, transparent 10px, #2a2a2a 10px, #2a2a2a 20px);
-            border: 4px solid #5a5a5a;
-            border-radius: 0;
-            padding: 30px;
-            box-shadow: 
-                0 0 0 2px #1a1a1a,
-                0 0 0 6px #4a4a4a,
-                0 8px 32px rgba(0,0,0,0.5);
-            max-width: 800px;
-            width: 95%;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #5a5a5a;
-        }
-        
-        .title {
-            font-size: 32px;
-            color: #55ff55;
-            text-shadow: 3px 3px 0 #1a5a1a;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-        
-        .subtitle {
-            font-size: 16px;
-            color: #aaaaaa;
-            text-shadow: 2px 2px 0 #2a2a2a;
-        }
-        
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .menu-item {
-            background: 
-                linear-gradient(145deg, #4a4a4a, #3a3a3a);
-            border: 3px solid #5a5a5a;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .menu-item:hover {
-            transform: translateY(-2px);
-            border-color: #55ff55;
-            box-shadow: 
-                0 4px 12px rgba(85, 255, 85, 0.3),
-                inset 0 0 20px rgba(85, 255, 85, 0.1);
-        }
-        
-        .menu-item:active {
-            transform: translateY(0);
-            border-color: #33aa33;
-        }
-        
-        .menu-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-            display: block;
-            text-shadow: 2px 2px 0 #2a2a2a;
-        }
-        
-        .menu-label {
-            font-size: 14px;
-            color: #ffffff;
-            text-shadow: 2px 2px 0 #2a2a2a;
-        }
-        
-        .search-panel {
-            background: rgba(42, 42, 42, 0.8);
-            border: 3px solid #5a5a5a;
-            padding: 25px;
-            margin-top: 20px;
-            display: none;
-        }
-        
-        .search-panel.active {
-            display: block;
-            animation: panelAppear 0.3s ease;
-        }
-        
-        @keyframes panelAppear {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .panel-title {
-            font-size: 20px;
-            color: #55ff55;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 0 #1a5a1a;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: #aaaaaa;
-            font-size: 14px;
-        }
-        
-        .form-input {
-            width: 100%;
-            background: #2a2a2a;
-            border: 2px solid #5a5a5a;
-            color: #ffffff;
-            padding: 12px;
-            font-family: 'Minecraft', monospace;
-            font-size: 14px;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: #55ff55;
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .form-row .form-group {
-            flex: 1;
-            margin-bottom: 0;
-        }
-        
-        .buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 25px;
-        }
-        
-        .btn {
-            flex: 1;
-            background: 
-                linear-gradient(145deg, #4a4a4a, #3a3a3a);
-            border: 3px solid #5a5a5a;
-            color: #ffffff;
-            padding: 12px 20px;
-            font-family: 'Minecraft', monospace;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-        
-        .btn:hover {
-            border-color: #55ff55;
-            transform: translateY(-1px);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
-        }
-        
-        .btn-primary {
-            background: 
-                linear-gradient(145deg, #55aa55, #448844);
-            border-color: #66bb66;
-        }
-        
-        .btn-danger {
-            background: 
-                linear-gradient(145deg, #aa5555, #884444);
-            border-color: #bb6666;
-        }
-        
-        .status-bar {
-            background: #2a2a2a;
-            border: 2px solid #5a5a5a;
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-        
-        .progress-container {
-            width: 100%;
-            height: 20px;
-            background: #1a1a1a;
-            border: 2px solid #5a5a5a;
-            margin: 10px 0;
-            position: relative;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            background: 
-                linear-gradient(90deg, #55ff55, #33aa33);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        
-        .progress-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #ffffff;
-            text-shadow: 1px 1px 0 #000;
-            font-size: 12px;
-        }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .stat-item {
-            background: #2a2a2a;
-            border: 2px solid #5a5a5a;
-            padding: 10px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 18px;
-            color: #55ff55;
-            text-shadow: 1px 1px 0 #1a5a1a;
-        }
-        
-        .stat-label {
-            font-size: 10px;
-            color: #aaaaaa;
-            margin-top: 4px;
-        }
-        
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #aa5555;
-            border: 2px solid #bb6666;
-            color: white;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 12px;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Квадраты чисел</title>
+<style>
+  :root {
+    --accent: #4caf50;
+    --bg1: #0b0b0b;
+    --bg2: #121212;
+    --text: #f5f5f5;
+    --muted: #777;
+  }
+  * {box-sizing:border-box;font-family:'Inter',sans-serif;}
+  body {
+    margin:0;
+    height:100vh;
+    overflow:hidden;
+    background: radial-gradient(circle at top, var(--bg2), var(--bg1));
+    color: var(--text);
+    display:flex;justify-content:center;align-items:center;
+    position:relative;
+    animation: bgShift 10s ease-in-out infinite alternate;
+  }
+
+  @keyframes bgShift {
+    0% {background: radial-gradient(circle at 20% 30%, #101010, #050505);}
+    100% {background: radial-gradient(circle at 80% 70%, #181818, #000);}
+  }
+
+  /* анимированные точки */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(76,175,80,0.15);
+    animation: float 10s linear infinite;
+    filter: blur(2px);
+  }
+  @keyframes float {
+    0% { transform: translateY(0) scale(1); opacity:0.4; }
+    50% { transform: translateY(-40px) scale(1.2); opacity:0.7; }
+    100% { transform: translateY(0) scale(1); opacity:0.4; }
+  }
+
+  .container {
+    position:relative;
+    z-index:5;
+    text-align:center;
+    width:100%;max-width:460px;
+  }
+
+  .screen {display:none;animation: fadeIn 0.3s ease;}
+  .active {display:block;}
+
+  @keyframes fadeIn {
+    from {opacity:0;transform:translateY(8px);}
+    to {opacity:1;transform:translateY(0);}
+  }
+
+  .card {
+    background: rgba(20,20,20,0.9);
+    border-radius:16px;
+    padding:36px 30px;
+    box-shadow:0 4px 30px rgba(0,0,0,0.4);
+    backdrop-filter:blur(10px);
+  }
+
+  h1 {font-weight:300;font-size:34px;margin-bottom:10px;}
+  .subtitle {color:var(--muted);margin-bottom:30px;}
+  .btn {
+    background:#1c1c1c;
+    color:var(--text);
+    border:none;
+    border-radius:10px;
+    padding:12px 24px;
+    font-size:16px;
+    margin:6px;
+    cursor:pointer;
+    transition:all 0.25s ease;
+  }
+  .btn:hover {background:#2a2a2a;transform:translateY(-2px);}
+  .btn-primary {
+    background:var(--accent);
+    color:white;
+    box-shadow:0 0 10px rgba(76,175,80,0.4);
+  }
+  .btn-primary:hover {
+    box-shadow:0 0 20px rgba(76,175,80,0.7);
+    transform:translateY(-2px) scale(1.02);
+  }
+  input {
+    width:100%;padding:14px;border:none;border-radius:8px;
+    text-align:center;font-size:18px;color:#fff;background:#1b1b1b;
+    margin-bottom:14px;transition:0.2s;
+  }
+  input:focus {outline:2px solid var(--accent);background:#202020;}
+  .time-select {
+    display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:24px;
+  }
+  .time-select button {
+    background:#141414;border:1px solid #2a2a2a;color:#bbb;
+    border-radius:8px;flex:1 1 40%;max-width:110px;padding:10px 0;
+    cursor:pointer;transition:all 0.2s ease;
+  }
+  .time-select button.active {
+    background:var(--accent);border-color:var(--accent);
+    color:#fff;box-shadow:0 0 10px rgba(76,175,80,0.4);
+  }
+  .timer {margin-bottom:16px;font-weight:500;font-size:18px;}
+  .time-bar {
+    height:6px;width:100%;background:var(--accent);
+    border-radius:3px;margin-bottom:20px;transition:width 1s linear;
+  }
+  .question {
+    font-size:60px;margin:25px 0;font-weight:300;
+    text-shadow:0 0 15px rgba(76,175,80,0.3);
+    transition: all 0.1s ease;
+  }
+  .question.correct {
+    animation: correctFlash 0.2s ease;
+  }
+  @keyframes correctFlash {
+    0% { transform: scale(1); text-shadow: 0 0 20px rgba(76,175,80,0.8); }
+    50% { transform: scale(1.05); text-shadow: 0 0 30px rgba(76,175,80,1); }
+    100% { transform: scale(1); text-shadow: 0 0 15px rgba(76,175,80,0.3); }
+  }
+  .feedback {font-size:16px;min-height:24px;margin-top:10px;transition:0.2s;}
+  .correct {color:var(--accent);}
+  .skipped {color:#ffb74d;}
+  .progress {font-size:15px;color:var(--muted);margin-top:8px;}
+  .result {margin-top:16px;color:var(--muted);}
+  .result strong {color:var(--text);}
+  
+  /* Стили для таблицы квадратов */
+  .table-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+  }
+  
+  .table-card {
+    aspect-ratio: 1/1;
+    perspective: 1000px;
+    cursor: pointer;
+  }
+  
+  .table-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  
+  .table-card.flipped .table-card-inner {
+    transform: rotateY(180deg);
+  }
+  
+  .table-card-front, .table-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    padding: 10px;
+  }
+  
+  .table-card-front {
+    background: #1c1c1c;
+    color: var(--text);
+    border: 1px solid #333;
+  }
+  
+  .table-card-back {
+    background: var(--accent);
+    color: white;
+    transform: rotateY(180deg);
+  }
+  
+  .card-number {
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
+  .card-square {
+    font-size: 18px;
+    margin-top: 5px;
+  }
+  
+  .back-title {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 5px;
+  }
+  
+  .back-answer {
+    font-size: 28px;
+    font-weight: 700;
+  }
+  
+  .time-result {
+    margin-top: 15px;
+    padding: 12px;
+    background: rgba(76,175,80,0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(76,175,80,0.3);
+  }
+  
+  .time-value {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 5px;
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="title">HOMEWORK FINDER</div>
-            <div class="subtitle">Автоматический поиск домашних заданий</div>
-        </div>
-        
-        <div class="menu-grid">
-            <div class="menu-item" onclick="showPanel('search')">
-                <span class="menu-icon">🔍</span>
-                <div class="menu-label">ПОИСК ДЗ</div>
-            </div>
-            
-            <div class="menu-item" onclick="showPanel('stats')">
-                <span class="menu-icon">📊</span>
-                <div class="menu-label">СТАТИСТИКА</div>
-            </div>
-            
-            <div class="menu-item" onclick="showPanel('settings')">
-                <span class="menu-icon">⚙️</span>
-                <div class="menu-label">НАСТРОЙКИ</div>
-            </div>
-            
-            <div class="menu-item" onclick="showPanel('results')">
-                <span class="menu-icon">📁</span>
-                <div class="menu-label">РЕЗУЛЬТАТЫ</div>
-            </div>
-        </div>
-        
-        <!-- Панель поиска -->
-        <div id="search-panel" class="search-panel">
-            <div class="close-btn" onclick="hidePanels()">✕</div>
-            <div class="panel-title">🔍 ПОИСК ДОМАШНИХ ЗАДАНИЙ</div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">ID НАЧАЛА:</label>
-                    <input type="number" id="start-id" class="form-input" value="1010">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">ID КОНЦА:</label>
-                    <input type="number" id="end-id" class="form-input" value="2000">
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">ЗАДЕРЖКА (МС):</label>
-                <input type="number" id="delay" class="form-input" value="800">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">ТЕКСТ ДЛЯ ПОИСКА:</label>
-                <textarea id="search-text" class="form-input" rows="3">В учебнике стр.36 упр.1. Сделайте письменно в тетради.</textarea>
-            </div>
-            
-            <div class="buttons">
-                <button class="btn btn-primary" onclick="startSearch()">▶️ НАЧАТЬ ПОИСК</button>
-                <button class="btn btn-danger" onclick="stopSearch()">⏹️ ОСТАНОВИТЬ</button>
-            </div>
-            
-            <div class="status-bar">
-                <div id="status-text">Готов к работе...</div>
-                <div class="progress-container">
-                    <div class="progress-bar" id="progress-bar"></div>
-                    <div class="progress-text" id="progress-text">0%</div>
-                </div>
-                
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-value" id="stat-checked">0</div>
-                        <div class="stat-label">ПРОВЕРЕНО</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="stat-found">0</div>
-                        <div class="stat-label">НАЙДЕНО</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="stat-errors">0</div>
-                        <div class="stat-label">ОШИБОК</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Остальные панели можно добавить позже -->
-        <div id="stats-panel" class="search-panel">
-            <div class="close-btn" onclick="hidePanels()">✕</div>
-            <div class="panel-title">📊 СТАТИСТИКА</div>
-            <div style="color: #aaaaaa; text-align: center; padding: 40px;">
-                Раздел в разработке...
-            </div>
-        </div>
-        
-        <div id="settings-panel" class="search-panel">
-            <div class="close-btn" onclick="hidePanels()">✕</div>
-            <div class="panel-title">⚙️ НАСТРОЙКИ</div>
-            <div style="color: #aaaaaa; text-align: center; padding: 40px;">
-                Раздел в разработке...
-            </div>
-        </div>
-        
-        <div id="results-panel" class="search-panel">
-            <div class="close-btn" onclick="hidePanels()">✕</div>
-            <div class="panel-title">📁 РЕЗУЛЬТАТЫ</div>
-            <div style="color: #aaaaaa; text-align: center; padding: 40px;">
-                Раздел в разработке...
-            </div>
-        </div>
-    </div>
+<!-- фоновые частицы -->
+<script>
+for(let i=0;i<18;i++){
+  const d=document.createElement('div');
+  d.className='particle';
+  const size=Math.random()*6+3;
+  d.style.width=d.style.height=size+'px';
+  d.style.left=Math.random()*100+'%';
+  d.style.top=Math.random()*100+'%';
+  d.style.animationDuration=(8+Math.random()*6)+'s';
+  document.body.appendChild(d);
+}
+</script>
 
-    <script>
-        let searchActive = false;
-        let currentSearchId = 0;
-        
-        function showPanel(panelName) {
-            hidePanels();
-            document.getElementById(panelName + '-panel').classList.add('active');
-        }
-        
-        function hidePanels() {
-            document.querySelectorAll('.search-panel').forEach(panel => {
-                panel.classList.remove('active');
-            });
-        }
-        
-        function updateProgress(current, total) {
-            const percent = Math.round((current / total) * 100);
-            document.getElementById('progress-bar').style.width = percent + '%';
-            document.getElementById('progress-text').textContent = percent + '%';
-        }
-        
-        function updateStats(checked, found, errors) {
-            document.getElementById('stat-checked').textContent = checked;
-            document.getElementById('stat-found').textContent = found;
-            document.getElementById('stat-errors').textContent = errors;
-        }
-        
-        async function startSearch() {
-            if (searchActive) return;
-            
-            const startId = parseInt(document.getElementById('start-id').value);
-            const endId = parseInt(document.getElementById('end-id').value);
-            const delay = parseInt(document.getElementById('delay').value);
-            const searchText = document.getElementById('search-text').value;
-            
-            searchActive = true;
-            updateStats(0, 0, 0);
-            
-            for (let id = startId; id <= endId; id++) {
-                if (!searchActive) break;
-                
-                currentSearchId = id;
-                document.getElementById('status-text').textContent = `Проверка ID: ${id}`;
-                updateProgress(id - startId, endId - startId + 1);
-                
-                // Имитация поиска (в реальности здесь будет fetch запрос)
-                await new Promise(resolve => setTimeout(resolve, 50));
-                
-                // Случайное "нахождение" для демонстрации
-                if (Math.random() < 0.005) {
-                    document.getElementById('status-text').innerHTML = 
-                        `<span style="color: #55ff55;">🎯 НАЙДЕНО! ID: ${id}</span>`;
-                    updateStats(id - startId + 1, 1, 0);
-                    break;
-                }
-                
-                updateStats(id - startId + 1, 0, 0);
-                
-                if (delay > 0) {
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                }
-            }
-            
-            if (searchActive) {
-                document.getElementById('status-text').textContent = 'Поиск завершен';
-                searchActive = false;
-            }
-        }
-        
-        function stopSearch() {
-            searchActive = false;
-            document.getElementById('status-text').textContent = 'Поиск остановлен';
-        }
-        
-        // Инициализация
-        hidePanels();
-        updateStats(0, 0, 0);
-    </script>
+<div class="container">
+  <!-- старт -->
+  <div id="start" class="screen active">
+    <h1>Квадраты чисел</h1>
+    <div class="subtitle">Тренировка от 10 до 20</div>
+    <div class="card">
+      <p style="margin-bottom:12px;">Выберите время:</p>
+      <div class="time-select">
+        <button class="time-btn active" data-time="30">30 сек</button>
+        <button class="time-btn" data-time="60">60 сек</button>
+        <button class="time-btn" data-time="90">90 сек</button>
+        <button class="time-btn" data-time="∞">Без таймера</button>
+      </div>
+      <button id="startBtn" class="btn btn-primary">Начать</button>
+      <button id="tableBtn" class="btn">Таблица квадратов</button>
+    </div>
+  </div>
+
+  <!-- игра -->
+  <div id="quiz" class="screen">
+    <div class="card">
+      <div class="timer" id="timer"></div>
+      <div class="time-bar" id="bar"></div>
+      <div class="question" id="question"></div>
+      <input type="number" id="answer" placeholder="Ваш ответ" autofocus />
+      <div class="feedback" id="feedback"></div>
+      <div class="progress" id="progress"></div>
+      <button id="skipBtn" class="btn">Пропустить</button>
+      <button id="backToStartBtn" class="btn">Назад</button>
+    </div>
+  </div>
+
+  <!-- результат -->
+  <div id="result" class="screen">
+    <div class="card">
+      <h2>Результаты</h2>
+      <p class="result" id="summary"></p>
+      <div class="time-result" id="timeResult"></div>
+      <button id="restartBtn" class="btn btn-primary" style="margin-top:20px;">Заново</button>
+      <button id="backToStartFromResultBtn" class="btn">Назад</button>
+    </div>
+  </div>
+  
+  <!-- таблица квадратов -->
+  <div id="table" class="screen">
+    <div class="card">
+      <h2>Таблица квадратов</h2>
+      <p style="margin-bottom:20px;color:var(--muted);">Нажмите на карточку, чтобы увидеть ответ</p>
+      <div class="table-grid" id="tableGrid"></div>
+      <button id="backFromTableBtn" class="btn btn-primary" style="margin-top:20px;">Назад</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const screens={
+  start: document.getElementById('start'),
+  quiz: document.getElementById('quiz'),
+  result: document.getElementById('result'),
+  table: document.getElementById('table')
+};
+
+const btns = document.querySelectorAll('.time-btn');
+const startBtn = document.getElementById('startBtn');
+const tableBtn = document.getElementById('tableBtn');
+const skipBtn = document.getElementById('skipBtn');
+const restartBtn = document.getElementById('restartBtn');
+const backToStartBtn = document.getElementById('backToStartBtn');
+const backFromTableBtn = document.getElementById('backFromTableBtn');
+const backToStartFromResultBtn = document.getElementById('backToStartFromResultBtn');
+
+const timerEl = document.getElementById('timer');
+const bar = document.getElementById('bar');
+const questionEl = document.getElementById('question');
+const feedbackEl = document.getElementById('feedback');
+const progressEl = document.getElementById('progress');
+const answerEl = document.getElementById('answer');
+const summaryEl = document.getElementById('summary');
+const timeResultEl = document.getElementById('timeResult');
+const tableGrid = document.getElementById('tableGrid');
+
+let selected = 30, noTimer = false, timer, timeLeft, totalTime;
+let numbers = [], results = [], i = 0;
+let startTime = 0; // Время начала теста
+let endTime = 0;   // Время окончания теста
+
+// Инициализация таблицы квадратов
+function initTable() {
+  tableGrid.innerHTML = '';
+  for (let num = 10; num <= 20; num++) {
+    const card = document.createElement('div');
+    card.className = 'table-card';
+    card.innerHTML = `
+      <div class="table-card-inner">
+        <div class="table-card-front">
+          <div class="card-number">${num}</div>
+          <div class="card-square">${num}²</div>
+        </div>
+        <div class="table-card-back">
+          <div class="back-title">${num}² =</div>
+          <div class="back-answer">${num * num}</div>
+        </div>
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      card.classList.toggle('flipped');
+    });
+    tableGrid.appendChild(card);
+  }
+}
+
+// Форматирование времени в мм:сс
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
+
+// Обработчики кнопок
+btns.forEach(b => b.onclick = () => {
+  btns.forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  if (b.dataset.time === '∞') {
+    noTimer = true;
+    selected = 9999;
+  } else {
+    noTimer = false;
+    selected = parseInt(b.dataset.time);
+  }
+});
+
+function show(n) {
+  Object.values(screens).forEach(s => s.classList.remove('active'));
+  screens[n].classList.add('active');
+}
+
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+startBtn.onclick = startQuiz;
+tableBtn.onclick = () => {
+  initTable();
+  show('table');
+};
+restartBtn.onclick = () => show('start');
+backToStartBtn.onclick = () => show('start');
+backFromTableBtn.onclick = () => show('start');
+backToStartFromResultBtn.onclick = () => show('start');
+skipBtn.onclick = skip;
+answerEl.oninput = check;
+
+function startQuiz() {
+  numbers = shuffle([...Array(11)].map((_, i) => i + 10));
+  results = [];
+  i = 0;
+  timeLeft = selected;
+  totalTime = selected;
+  startTime = Date.now(); // Запоминаем время начала
+  
+  show('quiz');
+  load();
+  if (!noTimer) startTimer();
+  else {
+    timerEl.textContent = 'Без таймера';
+    bar.style.width = '100%';
+  }
+}
+
+function startTimer() {
+  bar.style.width = '100%';
+  timer = setInterval(() => {
+    timeLeft--;
+    timerEl.textContent = timeLeft + ' сек';
+    bar.style.width = `${(timeLeft / totalTime) * 100}%`;
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      end();
+    }
+  }, 1000);
+}
+
+function load() {
+  if (i >= numbers.length) {
+    end();
+    return;
+  }
+  const n = numbers[i];
+  questionEl.textContent = n + '² = ?';
+  questionEl.classList.remove('correct');
+  answerEl.value = '';
+  feedbackEl.textContent = '';
+  progressEl.textContent = `${i + 1} / ${numbers.length}`;
+  answerEl.focus();
+}
+
+function check() {
+  const n = numbers[i];
+  if (parseInt(answerEl.value) === n * n) {
+    feedbackEl.textContent = '✔ Верно';
+    feedbackEl.className = 'feedback correct';
+    results.push(true);
+    
+    // Молниеносная смена вопроса
+    questionEl.classList.add('correct');
+    setTimeout(() => {
+      i++;
+      load();
+    }, 150); // Уменьшено до 150мс
+  }
+}
+
+function skip() {
+  results.push(false);
+  feedbackEl.textContent = '⏭ Пропущено';
+  feedbackEl.className = 'feedback skipped';
+  
+  // Молниеносная смена вопроса
+  setTimeout(() => {
+    i++;
+    load();
+  }, 150); // Уменьшено до 150мс
+}
+
+function end() {
+  endTime = Date.now(); // Запоминаем время окончания
+  clearInterval(timer);
+  show('result');
+  
+  const correct = results.filter(x => x).length,
+    total = results.length;
+  const percent = Math.round(correct / total * 100);
+  
+  // Вычисляем время решения
+  const timeSpent = Math.round((endTime - startTime) / 1000);
+  
+  let msg = percent >= 90 ? "Отлично!" : percent >= 70 ? "Хорошо" : percent >= 50 ? "Неплохо" : "Попробуй снова";
+  summaryEl.innerHTML = `<strong>${msg}</strong><br>Правильных: ${correct} из ${total}<br>Точность: ${percent}%`;
+  
+  // Показываем время решения
+  if (noTimer) {
+    timeResultEl.innerHTML = `
+      <div>Время решения:</div>
+      <div class="time-value">${formatTime(timeSpent)}</div>
+    `;
+  } else {
+    // Для режима с таймером показываем использованное время
+    const timeUsed = totalTime - timeLeft;
+    timeResultEl.innerHTML = `
+      <div>Время решения:</div>
+      <div class="time-value">${formatTime(timeUsed)}</div>
+      <div style="margin-top:8px;font-size:14px;opacity:0.8;">из ${formatTime(totalTime)} доступных</div>
+    `;
+  }
+}
+
+// Инициализация таблицы при загрузке
+initTable();
+</script>
 </body>
 </html>
